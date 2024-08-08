@@ -3,10 +3,62 @@ First time? Check out the tutorial game:
 https://sprig.hackclub.com/gallery/getting_started
 
 @title: WrongLane
-@author:
+@author: KaspianDev
 @tags: []
 @addedOn: 2024-00-00
 */
+
+/* Controls:
+w,s,a,d - Car movement
+j,l - Difficulty selection
+k - Game start
+*/
+
+const gameSound = tune`
+375: E5-375,
+375: G5-375,
+375: E5-375,
+375: G5-375,
+375: F5-375,
+375: A5-375,
+375: F5-375,
+375: A5-375,
+375: G5-375,
+375: B5-375,
+375: G5-375,
+375: B5-375,
+375: C5-375,
+375: D5-375,
+375: C5-375,
+375: A5-375,
+375: E5-375,
+375: G5-375,
+375: E5-375,
+375: G5-375,
+375: F5-375,
+375: A5-375,
+375: F5-375,
+375: A5-375,
+375: G5-375,
+375: B5-375,
+375: G5-375,
+375: B5-375,
+375: C5-375,
+375: D5-375,
+375: C5-375,
+375`
+const gameOverSound = tune`
+214.28571428571428: A5-214.28571428571428,
+214.28571428571428: F5-214.28571428571428,
+214.28571428571428: D5-214.28571428571428,
+214.28571428571428: C4-214.28571428571428,
+6000`
+const gameStartSound = tune`
+214.28571428571428: D5-214.28571428571428,
+214.28571428571428: E5-214.28571428571428,
+6428.571428571428`
+
+let playback;
 
 const player = "p"
 const car = "c"
@@ -215,9 +267,10 @@ gglmrgg`
 setMap(levels[0])
 
 let score = 0
+let highscore = 0
+
 let speed;
 let frequency;
-let textOffset = 0;
 
 let carTaskID;
 let carSpawnTaskID;
@@ -228,6 +281,10 @@ function play() {
   setMap(levels[1])
   playing = true
   refreshGame()
+  playTune(gameStartSound)
+  setTimeout(() => {
+    playback = playTune(gameSound, Infinity)
+  }, 1000)
 }
 
 const cars = []
@@ -236,11 +293,14 @@ const newCars = []
 function stop() {
   playing = false
   setMap(levels[0])
-  refreshMenu()
   if (carTaskID) clearInterval(carTaskID)
   if (carSpawnTaskID) clearInterval(carSpawnTaskID)
   cars.length = 0
-  console.log(cars)
+  if (score > highscore) highscore = score
+  playback.end()
+  score = 0
+  refreshMenu()
+  playTune(gameOverSound)
 }
 
 const carTypes = ["c", "t"]
@@ -249,19 +309,28 @@ function getRandomCarType() {
   return carTypes[Math.floor(Math.random() * 2)]
 }
 
-function refreshGame() {
+function refreshScore() {
   clearText()
-  addSprite(3, 6, player)
   addText(score.toString(), {
-    x: 16 - textOffset,
+    x: 14,
     y: 1,
     color: color`0`
   })
+  addText(highscore.toString(), {
+    x: 14,
+    y: 14,
+    color: color`0`
+  })
+}
+
+function refreshGame() {
+  addSprite(3, 6, player)
+  refreshScore()
   if (difficulty === 0) {
-    speed = 375
+    speed = 350
     frequency = 3
   } else if (difficulty === 1) {
-    speed = 325
+    speed = 300
     frequency = 3
   } else {
     speed = 300
@@ -280,6 +349,8 @@ function refreshGame() {
       if (trafficCar.y === height() - 1) {
         cars.splice(index, 1);
         trafficCar.remove()
+        score++
+        refreshScore()
       } else {
         trafficCar.y++
       }
@@ -305,7 +376,6 @@ function checkCarForCrash(car) {
   if (car.x === getFirst(player).x
     && car.y === getFirst(player).y) {
     stop()
-    console.log(true)
   }
 }
 
@@ -313,6 +383,16 @@ let difficulty = 0
 
 function refreshMenu() {
   clearText()
+
+  if (highscore != 0) {
+    const highscoreText = "Highscore " + highscore
+    addText(highscoreText, {
+      x: 4,
+      y: 4,
+      color: color`7`
+    })
+  }
+  
   addText("Wrong Lane", {
     x: 5,
     y: 1,
@@ -321,7 +401,7 @@ function refreshMenu() {
 
   addText("Difficulty", {
     x: 5,
-    y: 6,
+    y: 7,
     color: color`2`
   })
 
@@ -334,19 +414,19 @@ function refreshMenu() {
   if (difficulty === 0) {
     addText("< Normal >", {
       x: 5,
-      y: 8,
+      y: 9,
       color: color`4`
     })
   } else if (difficulty === 1) {
     addText("< Hard >", {
       x: 6,
-      y: 8,
+      y: 9,
       color: color`9`
     })
   } else {
     addText("< Hardcore >", {
       x: 4,
-      y: 8,
+      y: 9,
       color: color`3`
     })
   }
@@ -410,6 +490,3 @@ onInput("l", () => {
   }
 })
 
-afterInput(() => {
-
-})
