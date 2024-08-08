@@ -1,0 +1,154 @@
+/*
+First time? Check out the tutorial game:
+https://sprig.hackclub.com/gallery/getting_started
+
+@title: WrongLane
+@author: 
+@tags: []
+@addedOn: 2024-00-00
+*/
+
+const player = "p"
+const grass = "g"
+const roadLeft = "l"
+const roadRight = "r"
+const roadMiddle = "m"
+
+setLegend(
+  [ player, bitmap`
+....6LLLLLL6....
+...6LL0000LL6...
+...LL077770LL...
+..0L07777770L0..
+..0L07777770L0..
+..0L00000000L0..
+...L00111100L...
+...L01111110L...
+...L01111110L...
+...L00111100L...
+...L00000000L...
+..0L07777770L0..
+..0L00777700L0..
+..0LLL0000LLL0..
+...3LLLLLLLL3...
+...33LLLLLL33...` ],
+  [ grass, bitmap`
+DDDDDDDDDDDDDDDD
+4DD4DDDDDDD4DDDD
+DD444DD4DDDDDDDD
+DDDCDDDDDDDDDD4D
+DDDCDDDDDDDDDDDD
+DDDCDDDDDDD4DDDD
+DDDDDDD4DD444DDD
+D4DDDDDDDDDCDDDD
+DDDDDDDDDDDCDDDD
+DDD4DDDDDDDCDD4D
+DD444DDDDDDDDDDD
+DDDCDDDD4DDD4DDD
+DDDCDDDDDDDDDDDD
+DDDCDDDDDDDDDDDD
+D4DDDD4DDD4DDDD4
+DDDDDDDDDDDDDDDD` ],
+  [ roadLeft, bitmap`
+0L1111111111111L
+0L1111110111111L
+0L1111110111111L
+0L1111111111111L
+0L1111111111111L
+0L1111110111111L
+0L1111110111111L
+0L1111111111111L
+0L1111111111111L
+0L1111110111111L
+0L1111110111111L
+0L1111111111111L
+0L1111111111111L
+0L1111110111111L
+0L1111110111111L
+0L1111111111111L` ],
+  [ roadRight, bitmap`
+L1111111111111L0
+L1111110111111L0
+L1111110111111L0
+L1111111111111L0
+L1111111111111L0
+L1111110111111L0
+L1111110111111L0
+L1111111111111L0
+L1111111111111L0
+L1111110111111L0
+L1111110111111L0
+L1111111111111L0
+L1111111111111L0
+L1111110111111L0
+L1111110111111L0
+L1111111111111L0` ],
+  [ roadMiddle, bitmap`
+1111111111111111
+L11111101111111L
+L11111101111111L
+L11111111111111L
+L11111111111111L
+L11111101111111L
+L11111101111111L
+1111111111111111
+1111111111111111
+L11111101111111L
+L11111101111111L
+L11111111111111L
+L11111111111111L
+L11111101111111L
+L11111101111111L
+1111111111111111` ]
+)
+
+setSolids([])
+
+let level = 1
+const levels = [
+  map`
+gglmrgg
+gglmrgg
+gglmrgg
+gglmrgg
+gglmrgg
+gglmrgg
+gglmrgg`
+]
+setMap(levels[0])
+
+function switchRoad() {
+  if (level === 1) {
+    level = 2;
+  } else if (level === 2) {
+    level = 1;
+  }
+}
+
+addSprite(3, 6, player);
+
+setPushables({
+  [ player ]: []
+})
+
+setSolids([ player, grass ])
+
+onInput("w", () => {
+  getFirst(player).y--
+})
+
+onInput("s", () => {
+  getFirst(player).y++
+})
+
+onInput("a", () => {
+  getFirst(player).x--
+})
+
+onInput("d", () => {
+  getFirst(player).x++
+})
+
+afterInput(() => {
+  
+})
