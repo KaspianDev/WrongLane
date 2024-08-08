@@ -196,19 +196,31 @@ gglmrgg`
 ]
 setMap(levels[0])
 
-const cars = []
-
 let score = 0
-let speed = 500;
+let speed;
+let frequency;
 let textOffset = 0;
 
 let carTaskID;
+let carSpawnTaskID;
 
 let playing = false
 function play() {
   setMap(levels[1])
+  playing = true
   refreshGame()
 }
+
+function stop() {
+  playing = false
+  setMap(levels[0])
+  refreshMenu()
+  if (carTaskID) clearInterval(carTaskID)
+  if (carSpawnTaskID) clearInterval(carSpawnTaskID)
+  getAll("c").forEach((trafficCar) => trafficCar.remove())
+}
+
+const newCars = []
 
 function refreshGame() {
   clearText()
@@ -218,18 +230,32 @@ function refreshGame() {
     y: 1,
     color: color`0`
   })
+  speed = (difficulty === 0) ? 450 : 350;
+  frequency = (difficulty === 0) ? 4 : 3;
   if (carTaskID) clearInterval(carTaskID)
-  cars.push(addSprite(3, 0, "c"))
+  if (carSpawnTaskID) clearInterval(carSpawnTaskID)
   carTaskID = setInterval(() => {
-    cars.forEach((trafficCar) => {
-      console.log(trafficCar)
-      if (trafficCar.y === height()) {
-        clearTile(trafficCar.x, trafficCar.y)
+    getAll("c").forEach((trafficCar) => {
+      if (newCars.includes(trafficCar)) {
+        newCars.pop(trafficCar)
+        console.log("pop")
+        return
+      }
+      if (trafficCar.y === height() - 1) {
+        trafficCar.remove()
       } else {
         trafficCar.y++
       }
+      if (trafficCar.y === getFirst(player).y 
+          && trafficCar.x === getFirst(player).x) {
+        stop()
+      }
     })
   }, speed)
+  carSpawnTaskID = setInterval(() => {
+    addSprite(2 + Math.floor(Math.random() * 3), 0, "c")
+    newCars.push(getAll("c")[getAll("c").length - 1])
+  }, speed * frequency)
 }
 
 let difficulty = 0
@@ -269,7 +295,7 @@ function refreshMenu() {
 }
 
 function changeDifficulty() {
-      if (difficulty === 0) {
+    if (difficulty === 0) {
       difficulty++
     } else {
       difficulty--
