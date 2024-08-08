@@ -3,7 +3,7 @@ First time? Check out the tutorial game:
 https://sprig.hackclub.com/gallery/getting_started
 
 @title: WrongLane
-@author: 
+@author:
 @tags: []
 @addedOn: 2024-00-00
 */
@@ -230,34 +230,24 @@ function play() {
   refreshGame()
 }
 
-<<<<<<< HEAD
-=======
 const cars = []
 const newCars = []
 
->>>>>>> e49a920 (Better collision system, added trucks)
 function stop() {
   playing = false
   setMap(levels[0])
   refreshMenu()
   if (carTaskID) clearInterval(carTaskID)
   if (carSpawnTaskID) clearInterval(carSpawnTaskID)
-<<<<<<< HEAD
-  getAll("c").forEach((trafficCar) => trafficCar.remove())
-}
-
-const newCars = []
-=======
   cars.length = 0
   console.log(cars)
 }
 
-const carTypes = [ "c", "t" ]
+const carTypes = ["c", "t"]
 
 function getRandomCarType() {
   return carTypes[Math.floor(Math.random() * 2)]
 }
->>>>>>> e49a920 (Better collision system, added trucks)
 
 function refreshGame() {
   clearText()
@@ -267,20 +257,6 @@ function refreshGame() {
     y: 1,
     color: color`0`
   })
-<<<<<<< HEAD
-  speed = (difficulty === 0) ? 450 : 350;
-  frequency = (difficulty === 0) ? 4 : 3;
-  if (carTaskID) clearInterval(carTaskID)
-  if (carSpawnTaskID) clearInterval(carSpawnTaskID)
-  carTaskID = setInterval(() => {
-    getAll("c").forEach((trafficCar) => {
-      if (newCars.includes(trafficCar)) {
-        newCars.pop(trafficCar)
-        console.log("pop")
-        return
-      }
-      if (trafficCar.y === height() - 1) {
-=======
   if (difficulty === 0) {
     speed = 375
     frequency = 3
@@ -303,23 +279,10 @@ function refreshGame() {
       }
       if (trafficCar.y === height() - 1) {
         cars.splice(index, 1);
->>>>>>> e49a920 (Better collision system, added trucks)
         trafficCar.remove()
       } else {
         trafficCar.y++
       }
-<<<<<<< HEAD
-      if (trafficCar.y === getFirst(player).y 
-          && trafficCar.x === getFirst(player).x) {
-        stop()
-      }
-    })
-  }, speed)
-  carSpawnTaskID = setInterval(() => {
-    addSprite(2 + Math.floor(Math.random() * 3), 0, "c")
-    newCars.push(getAll("c")[getAll("c").length - 1])
-  }, speed * frequency)
-=======
       checkCarForCrash(trafficCar)
     })
   }, speed)
@@ -339,12 +302,11 @@ function checkForCrash() {
 }
 
 function checkCarForCrash(car) {
-    if (car.x === getFirst(player).x
-       && car.y === getFirst(player).y) {
-      stop()
-      console.log(true)
-    }
->>>>>>> e49a920 (Better collision system, added trucks)
+  if (car.x === getFirst(player).x
+    && car.y === getFirst(player).y) {
+    stop()
+    console.log(true)
+  }
 }
 
 let difficulty = 0
@@ -390,18 +352,6 @@ function refreshMenu() {
   }
 }
 
-<<<<<<< HEAD
-function changeDifficulty() {
-    if (difficulty === 0) {
-      difficulty++
-    } else {
-      difficulty--
-    }
-    refreshMenu()
-}
-
-=======
->>>>>>> e49a920 (Better collision system, added trucks)
 refreshMenu()
 
 setPushables({
