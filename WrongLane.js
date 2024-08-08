@@ -9,6 +9,7 @@ https://sprig.hackclub.com/gallery/getting_started
 */
 
 const player = "p"
+const car = "c"
 const grass = "g"
 const roadLeft = "l"
 const roadRight = "r"
@@ -36,6 +37,23 @@ setLegend(
 ..0LLL0000LLL0..
 ...3LLLLLLLL3...
 ...33LLLLLL33...` ],
+  [ car, bitmap`
+...33HHHHHH33...
+...3HHHHHHHH3...
+..0HHH0000HHH0..
+..0H00777700H0..
+..0H07777770H0..
+...H00000000H...
+...H00888800H...
+...H08888880H...
+...H08888880H...
+...H00888800H...
+..0H00000000H0..
+..0H07777770H0..
+..0H07777770H0..
+...HH077770HH...
+...6HH0000HH6...
+....6HHHHHH6....` ],
   [ grass, bitmap`
 DDDDDDDDDDDDDDDD
 4DD4DDDDDDD4DDDD
@@ -178,26 +196,45 @@ gglmrgg`
 ]
 setMap(levels[0])
 
+const cars = []
+
 let score = 0
 let speed = 500;
 let textOffset = 0;
 
+let carTaskID;
+
 let playing = false
 function play() {
-  clearText()
   setMap(levels[1])
-  playing = true
+  refreshGame()
+}
+
+function refreshGame() {
+  clearText()
   addSprite(3, 6, player)
   addText(score.toString(), { 
     x: 16 - textOffset,
     y: 1,
     color: color`0`
   })
-  score = 1
+  if (carTaskID) clearInterval(carTaskID)
+  cars.push(addSprite(3, 0, "c"))
+  carTaskID = setInterval(() => {
+    cars.forEach((trafficCar) => {
+      console.log(trafficCar)
+      if (trafficCar.y === height()) {
+        clearTile(trafficCar.x, trafficCar.y)
+      } else {
+        trafficCar.y++
+      }
+    })
+  }, speed)
 }
 
 let difficulty = 0
 function refreshMenu() {
+  clearText()
   addText("Wrong Lane", { 
     x: 5,
     y: 1,
@@ -229,6 +266,15 @@ function refreshMenu() {
     color: color`3`
   })
   }
+}
+
+function changeDifficulty() {
+      if (difficulty === 0) {
+      difficulty++
+    } else {
+      difficulty--
+    }
+    refreshMenu()
 }
 
 refreshMenu()
@@ -273,19 +319,13 @@ onInput("k", () => {
 
 onInput("j", () => {
   if (!playing) {
-    getFirst(player).x--
+    changeDifficulty()
   }
 })
 
 onInput("l", () => {
   if (!playing) {
-    if (difficulty === 0) {
-      difficulty++
-    } else {
-      difficulty--
-    }
-    clearText()
-    refreshMenu()
+    changeDifficulty()
   }
 })
 
