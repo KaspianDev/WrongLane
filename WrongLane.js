@@ -57,6 +57,10 @@ const gameStartSound = tune`
 214.28571428571428: D5-214.28571428571428,
 214.28571428571428: E5-214.28571428571428,
 6428.571428571428`
+const crashSound = tune`
+214.28571428571428: A4^214.28571428571428,
+214.28571428571428: G4^214.28571428571428,
+6428.571428571428`
 
 let playback;
 
@@ -68,7 +72,9 @@ const roadLeft = "l"
 const roadRight = "r"
 const roadMiddle = "m"
 
-const menuBackgroundLeft = "h"
+const heart = "h"
+
+const menuBackgroundLeft = "u"
 const menuBackground = "j"
 const menuBackgroundRight = "k"
 
@@ -124,6 +130,23 @@ setLegend(
 ..0D07777770D0..
 ..0DD000000DD0..
 ...66DDDDDD66...`],
+    [heart, bitmap`
+......00....00..
+.....0230..0330.
+....023330033330
+....033333333330
+....033333333330
+....033333333330
+.....0333333330.
+......03333330..
+.......033330...
+........0330....
+.........00.....
+................
+................
+................
+................
+................`],
   [grass, bitmap`
 DDDDDDDDDDDDDDDD
 4DD4DDDDDDD4DDDD
@@ -250,11 +273,11 @@ setSolids([player, grass])
 let level = 0
 const levels = [
   map`
-hjjjjk
-hjjjjk
-hjjjjk
-hjjjjk
-hjjjjk`,
+ujjjjk
+ujjjjk
+ujjjjk
+ujjjjk
+ujjjjk`,
   map`
 gglmrgg
 gglmrgg
@@ -269,6 +292,7 @@ setMap(levels[0])
 let score = 0
 let highscore = 0
 
+let lives;
 let speed;
 let frequency;
 
@@ -280,11 +304,25 @@ let playing = false
 function play() {
   setMap(levels[1])
   playing = true
+  if (difficulty === 0) {
+    speed = 350
+    frequency = 3
+    lives = 3
+  } else if (difficulty === 1) {
+    speed = 300
+    frequency = 3
+    lives = 2
+  } else {
+    speed = 300
+    frequency = 2
+    lives = 1
+  }
   refreshGame()
+  addSprite(0, 6, heart)
   playTune(gameStartSound)
   setTimeout(() => {
     playback = playTune(gameSound, Infinity)
-  }, 1000)
+  }, 700)
 }
 
 const cars = []
@@ -295,7 +333,7 @@ function stop() {
   setMap(levels[0])
   if (carTaskID) clearInterval(carTaskID)
   if (carSpawnTaskID) clearInterval(carSpawnTaskID)
-  cars.length = 0
+  clearCars()
   if (score > highscore) highscore = score
   playback.end()
   score = 0
@@ -311,6 +349,11 @@ function getRandomCarType() {
 
 function refreshScore() {
   clearText()
+  addText(lives.toString(), {
+    x: 5,
+    y: 14,
+    color: color`0`
+  })
   addText(score.toString(), {
     x: 14,
     y: 1,
@@ -323,19 +366,26 @@ function refreshScore() {
   })
 }
 
+function crash() {
+  lives--
+  if (lives === 0) {
+    stop()
+  } else {
+    getFirst(player).remove()
+    refreshGame()
+    clearCars()
+    playTune(crashSound)
+  }
+}
+
+function clearCars() {
+  cars.forEach((car) => car.remove())
+  cars.length = 0
+}
+
 function refreshGame() {
   addSprite(3, 6, player)
   refreshScore()
-  if (difficulty === 0) {
-    speed = 350
-    frequency = 3
-  } else if (difficulty === 1) {
-    speed = 300
-    frequency = 3
-  } else {
-    speed = 300
-    frequency = 2
-  }
   if (carTaskID) clearInterval(carTaskID)
   if (carSpawnTaskID) clearInterval(carSpawnTaskID)
   carTaskID = setInterval(() => {
@@ -373,9 +423,9 @@ function checkForCrash() {
 }
 
 function checkCarForCrash(car) {
-  if (car.x === getFirst(player).x
-    && car.y === getFirst(player).y) {
-    stop()
+  if (car.x === getFirst(player).x &&
+    car.y === getFirst(player).y) {
+    crash()
   }
 }
 
@@ -392,7 +442,7 @@ function refreshMenu() {
       color: color`7`
     })
   }
-  
+
   addText("Wrong Lane", {
     x: 5,
     y: 1,
@@ -473,7 +523,9 @@ onInput("i", () => {
 })
 
 onInput("k", () => {
-  play()
+  if (!playing) {
+    play()
+  }
 })
 
 onInput("j", () => {
@@ -489,4 +541,3 @@ onInput("l", () => {
     refreshMenu()
   }
 })
-
