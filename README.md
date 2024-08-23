@@ -11,8 +11,8 @@ There are 2 types of cars with different designs for more variety.
 
 ## Controls
 
-w, s, a, d - Controlling your car movement
-k - Start the game if in main menu
+w, s, a, d - Controlling your car movement  
+k - Start the game if in main menu  
 j, l - Change difficulty if in main menu
 
 ## How to play?
