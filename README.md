@@ -1,5 +1,6 @@
-
 # WrongLane
+
+![](assets/wronglane.png)
 
 WrongLane is a game designed for Sprig.  
 You play as a car which driver in an opposite direction to other cars and you have to avoid crashing into them.  
